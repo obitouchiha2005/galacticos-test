@@ -1,0 +1,646 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>YAEL Hacker Personality Test</title>
+
+<!-- Fuentes futuristas -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ==================== FONDO HACKER + TU IMAGEN ==================== */
+*{box-sizing:border-box;}
+
+body{
+    margin:0;
+    font-family:"Poppins",sans-serif;
+    color:#f5f5f5;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    overflow:hidden;
+    background:#000;
+}
+
+/* Tu imagen local: fondo.jpg (misma carpeta que este HTML) */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:url("fondo.jpg") center/cover no-repeat;
+    filter:brightness(0.35) contrast(1.2);
+    z-index:-3;
+    animation:fondoZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes fondoZoom{
+    0%{ transform:scale(1) translateX(0); }
+    50%{ transform:scale(1.12) translateX(-20px); }
+    100%{ transform:scale(1.02) translateX(10px); }
+}
+
+/* Capa de brillo verde */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:radial-gradient(circle, rgba(0,255,140,0.25), transparent 70%);
+    z-index:-2;
+    mix-blend-mode:screen;
+    animation:halo 6s ease-in-out infinite alternate;
+}
+@keyframes halo{
+    from{ opacity:0.3; transform:scale(1);}
+    to{ opacity:0.7; transform:scale(1.15);}
+}
+
+/* Lluvia Matrix */
+.matrix-rain{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+    background-image:
+        linear-gradient(rgba(0,255,140,0.4) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(0,255,140,0.25) 1px, transparent 1px);
+    background-size: 2px 40px, 40px 2px;
+    animation:rainFall 0.6s linear infinite;
+    opacity:0.5;
+}
+@keyframes rainFall{
+    from{ background-position:0 0,0 0; }
+    to{ background-position:0 40px,40px 0; }
+}
+
+/* ==================== PANTALLA DE CARGA ==================== */
+#loader{
+    position:fixed;
+    inset:0;
+    background:#000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#00ffaa;
+    font-family:"Orbitron",sans-serif;
+    z-index:999;
+}
+#loader.hide{
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .6s ease, visibility .6s ease;
+}
+.loader-circle{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    border:3px solid rgba(0,255,170,0.3);
+    border-top-color:#00ffaa;
+    animation:spin 0.9s linear infinite;
+    margin-bottom:14px;
+}
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+/* ==================== TARJETA PRINCIPAL ==================== */
+.card{
+    width:100%;
+    max-width:560px;
+    background:rgba(0,0,0,0.7);
+    border-radius:22px;
+    padding:28px 26px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.9);
+    border:1px solid rgba(0,255,140,0.3);
+    backdrop-filter:blur(16px);
+    transform-style:preserve-3d;
+    transition:transform .15s ease;
+}
+.card.tilt{
+    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+}
+
+h1.title{
+    text-align:center;
+    font-size:26px;
+    margin-top:0;
+    margin-bottom:4px;
+    font-family:"Orbitron",sans-serif;
+    letter-spacing:1px;
+    background:linear-gradient(90deg,#00ff9d,#00ffaa);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+p.subtitle{
+    text-align:center;
+    font-size:13px;
+    opacity:0.85;
+    margin:0 0 18px;
+    font-family:"Orbitron",sans-serif;
+}
+
+/* Contenido */
+label{
+    display:block;
+    margin-top:12px;
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:.3px;
+}
+input[type="text"],
+input[type="number"]{
+    width:100%;
+    padding:11px 12px;
+    margin-top:6px;
+    border-radius:14px;
+    border:none;
+    outline:none;
+    background:rgba(8,30,22,0.9);
+    color:#e9fff6;
+    font-size:14px;
+    box-shadow:inset 0 0 6px rgba(0,0,0,0.7);
+    transition:.22s;
+}
+input:focus{
+    box-shadow:0 0 12px #00ffbb;
+    transform:scale(1.02);
+}
+
+/* Radios */
+.radio-option{ 
+    margin:4px 0; 
+    font-size:14px; 
+}
+.radio-option input{
+    margin-right:6px;
+}
+
+/* Botones */
+.btn-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:22px;
+}
+.btn{
+    flex:1;
+    padding:11px 10px;
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:700;
+    font-family:"Orbitron",sans-serif;
+    transition:.25s;
+}
+.btn-primary{
+    background:linear-gradient(90deg,#00ff9d,#00ffaa);
+    color:#00150e;
+    box-shadow:0 6px 15px rgba(0,255,150,0.3);
+}
+.btn-primary:hover{
+    transform:translateY(-1px);
+    box-shadow:0 9px 20px rgba(0,255,160,0.5);
+}
+.btn-secondary{
+    background:transparent;
+    color:#00ffaa;
+    border:1px solid #00ffaa;
+}
+.btn-secondary:hover{
+    background:rgba(0,255,150,0.15);
+}
+
+/* Música */
+.music-toggle{
+    margin-top:12px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    font-size:11px;
+    opacity:.85;
+}
+.music-button{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:none;
+    background:radial-gradient(circle,#00ffaa,#00cc88);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.8);
+}
+.music-button span{font-size:17px;}
+
+/* Pasos (ocultos por defecto) */
+#step2,#step3,#step4{display:none;}
+
+/* Resultado */
+#step4 h2{
+    font-family:"Orbitron",sans-serif;
+    text-align:center;
+    margin-bottom:8px;
+}
+#resultadoTexto{
+    font-size:14px;
+    line-height:1.6;
+    white-space:pre-wrap; /* respeta saltos de línea */
+}
+
+/* Responsive */
+@media(max-width:480px){
+    .card{padding:22px 18px;}
+    h1.title{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loader hacker -->
+<div id="loader">
+    <div class="loader-circle"></div>
+    <div>Inicializando sistema...</div>
+    <div style="font-size:11px;opacity:.7;margin-top:4px;">Cargando YAEL Personality Test</div>
+</div>
+
+<!-- Lluvia Matrix -->
+<div class="matrix-rain"></div>
+
+<!-- Música hacker -->
+<audio id="music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0a3e5d5b5b.mp3?filename=cyberpunk-hero-112867.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card" id="card">
+
+    <h1 class="title">Test de Personalidad</h1>
+    <p class="subtitle">Completa tus datos y responde las preguntas</p>
+
+    <!-- ========== PASO 1: DATOS ========== -->
+    <div id="step1">
+        <label>Nombre completo</label>
+        <input type="text" id="nombre">
+
+        <label>Día de nacimiento</label>
+        <input type="number" id="dia" placeholder="1 - 31">
+
+        <label>Mes de nacimiento</label>
+        <input type="number" id="mes" placeholder="1 - 12">
+
+        <label>Año de nacimiento</label>
+        <input type="number" id="anio" placeholder="Ej: 2006">
+
+        <div class="btn-row">
+            <button class="btn btn-primary" id="toStep2">Comenzar preguntas ▸</button>
+        </div>
+    </div>
+
+    <!-- ========== PASO 2: PREGUNTAS 1-5 (de tu hoja) ========== -->
+    <div id="step2">
+        <p style="margin-bottom:12px;font-family:Orbitron;">Preguntas 1 a la 5</p>
+
+        <label>1. ¿Cómo prefieres pasar tu tiempo libre?</label>
+        <div class="radio-option"><input type="radio" name="p1" value="A"> A) Con amigos y familia</div>
+        <div class="radio-option"><input type="radio" name="p1" value="B"> B) Solo/a o con pocas personas</div>
+
+        <label>2. Al tomar decisiones importantes, ¿qué es más importante?</label>
+        <div class="radio-option"><input type="radio" name="p2" value="A"> A) Los hechos y la lógica</div>
+        <div class="radio-option"><input type="radio" name="p2" value="B"> B) Los sentimientos de las personas</div>
+
+        <label>3. ¿Cómo organizas tus tareas?</label>
+        <div class="radio-option"><input type="radio" name="p3" value="A"> A) Planeo todo con anticipación</div>
+        <div class="radio-option"><input type="radio" name="p3" value="B"> B) Prefiero ser flexible</div>
+
+        <label>4. En trabajos en equipo, ¿cuál es tu rol?</label>
+        <div class="radio-option"><input type="radio" name="p4" value="A"> A) Líder que organiza</div>
+        <div class="radio-option"><input type="radio" name="p4" value="B"> B) Colaborador que apoya</div>
+
+        <label>5. ¿Qué tipo de actividades prefieres?</label>
+        <div class="radio-option"><input type="radio" name="p5" value="A"> A) Prácticas y concretas</div>
+        <div class="radio-option"><input type="radio" name="p5" value="B"> B) Creativas e imaginativas</div>
+
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="back1">◂ Atrás</button>
+            <button class="btn btn-primary" id="toStep3">Siguiente 5 preguntas ▸</button>
+        </div>
+    </div>
+
+    <!-- ========== PASO 3: PREGUNTAS 6-10 (extras A–E) ========== -->
+    <div id="step3">
+        <p style="margin-bottom:12px;font-family:Orbitron;">Preguntas 6 a la 10</p>
+
+        <label>6. Al tomar decisiones importantes, ¿en qué te basas más?</label>
+        <div class="radio-option"><input type="radio" name="p6" value="A"> A) En datos y lógica</div>
+        <div class="radio-option"><input type="radio" name="p6" value="B"> B) En cómo afecta a las personas</div>
+        <div class="radio-option"><input type="radio" name="p6" value="C"> C) En mi experiencia previa</div>
+        <div class="radio-option"><input type="radio" name="p6" value="D"> D) En la opinión de personas de confianza</div>
+        <div class="radio-option"><input type="radio" name="p6" value="E"> E) En mi intuición personal</div>
+
+        <label>7. ¿Cómo sueles organizar tus tareas diarias?</label>
+        <div class="radio-option"><input type="radio" name="p7" value="A"> A) Planificando todo desde el inicio</div>
+        <div class="radio-option"><input type="radio" name="p7" value="B"> B) Dejando espacio para improvisar</div>
+        <div class="radio-option"><input type="radio" name="p7" value="C"> C) Haciendo listas y checklists</div>
+        <div class="radio-option"><input type="radio" name="p7" value="D"> D) Trabajando mejor bajo presión</div>
+        <div class="radio-option"><input type="radio" name="p7" value="E"> E) Priorizando según lo urgente del momento</div>
+
+        <label>8. En trabajos en equipo, ¿qué rol disfrutas más?</label>
+        <div class="radio-option"><input type="radio" name="p8" value="A"> A) Liderar y tomar decisiones</div>
+        <div class="radio-option"><input type="radio" name="p8" value="B"> B) Apoyar y ayudar a los demás</div>
+        <div class="radio-option"><input type="radio" name="p8" value="C"> C) Proponer ideas creativas</div>
+        <div class="radio-option"><input type="radio" name="p8" value="D"> D) Revisar detalles y errores</div>
+        <div class="radio-option"><input type="radio" name="p8" value="E"> E) Motivar y animar al grupo</div>
+
+        <label>9. ¿Qué tipo de actividades disfrutas más?</label>
+        <div class="radio-option"><input type="radio" name="p9" value="A"> A) Tareas prácticas y concretas</div>
+        <div class="radio-option"><input type="radio" name="p9" value="B"> B) Actividades creativas e imaginativas</div>
+        <div class="radio-option"><input type="radio" name="p9" value="C"> C) Actividad física o movimiento</div>
+        <div class="radio-option"><input type="radio" name="p9" value="D"> D) Retos intelectuales y estratégicos</div>
+        <div class="radio-option"><input type="radio" name="p9" value="E"> E) Actividades sociales y dinámicas</div>
+
+        <label>10. Cuando conoces a alguien nuevo, ¿qué te llama más la atención?</label>
+        <div class="radio-option"><input type="radio" name="p10" value="A"> A) Su forma de hablar</div>
+        <div class="radio-option"><input type="radio" name="p10" value="B"> B) Su forma de pensar</div>
+        <div class="radio-option"><input type="radio" name="p10" value="C"> C) Su creatividad</div>
+        <div class="radio-option"><input type="radio" name="p10" value="D"> D) Su estilo o apariencia</div>
+        <div class="radio-option"><input type="radio" name="p10" value="E"> E) Su energía o vibra</div>
+
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="back2">◂ Volver a 1-5</button>
+            <button class="btn btn-primary" id="toStep4">Ver resultado ▸</button>
+        </div>
+    </div>
+
+    <!-- ========== PASO 4: RESULTADO ========== -->
+    <div id="step4">
+        <h2>Tu Resultado</h2>
+        <p id="resultadoTexto"></p>
+
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="restart">Reiniciar test</button>
+        </div>
+    </div>
+
+    <!-- Control de música -->
+    <div class="music-toggle">
+        <span>Música hacker</span>
+        <button class="music-button" id="musicBtn"><span>▶️</span></button>
+    </div>
+</div>
+
+<script>
+// Loader
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        const loader = document.getElementById("loader");
+        loader.classList.add("hide");
+    }, 1500);
+});
+
+// Navegación
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+const step4 = document.getElementById("step4");
+
+document.getElementById("toStep2").onclick = function () {
+    const nombre = document.getElementById("nombre").value.trim();
+    const dia = parseInt(document.getElementById("dia").value);
+    const mes = parseInt(document.getElementById("mes").value);
+    const anio = parseInt(document.getElementById("anio").value);
+
+    if (!nombre || isNaN(dia) || isNaN(mes) || isNaN(anio)) {
+        alert("Completa todos tus datos primero.");
+        return;
+    }
+    if (dia < 1 || dia > 31 || mes < 1 || mes > 12) {
+        alert("Revisa tu fecha de nacimiento.");
+        return;
+    }
+
+    step1.style.display = "none";
+    step2.style.display = "block";
+};
+
+document.getElementById("back1").onclick = function () {
+    step2.style.display = "none";
+    step1.style.display = "block";
+};
+
+function getRadio(name){
+    const r = document.getElementsByName(name);
+    for(let o of r){ if(o.checked) return o.value; }
+    return null;
+}
+
+document.getElementById("toStep3").onclick = function () {
+    // verificar preguntas 1-5
+    for(let i=1;i<=5;i++){
+        if(!getRadio("p"+i)){
+            alert("Responde todas las preguntas de la 1 a la 5.");
+            return;
+        }
+    }
+    step2.style.display = "none";
+    step3.style.display = "block";
+};
+
+document.getElementById("back2").onclick = function () {
+    step3.style.display = "none";
+    step2.style.display = "block";
+};
+
+// Función número de la suerte
+function numeroSuerte(d,m,a){
+    let s = (String(d)+String(m)+String(a))
+        .split("")
+        .map(Number)
+        .reduce((x,y)=>x+y);
+    while(s>9){
+        s = String(s).split("").map(Number).reduce((x,y)=>x+y);
+    }
+    return s;
+}
+
+// Signo zodiacal por fecha
+function signoZodiacal(d,m){
+    // m: 1=enero ... 12=diciembre
+    if((d>=21 && m==3) || (d<=20 && m==4)) return "Aries";
+    if((d>=21 && m==4) || (d<=20 && m==5)) return "Tauro";
+    if((d>=21 && m==5) || (d<=21 && m==6)) return "Géminis";
+    if((d>=22 && m==6) || (d<=22 && m==7)) return "Cáncer";
+    if((d>=23 && m==7) || (d<=23 && m==8)) return "Leo";
+    if((d>=24 && m==8) || (d<=23 && m==9)) return "Virgo";
+    if((d>=24 && m==9) || (d<=23 && m==10)) return "Libra";
+    if((d>=24 && m==10)|| (d<=22 && m==11)) return "Escorpio";
+    if((d>=23 && m==11)|| (d<=21 && m==12)) return "Sagitario";
+    if((d>=22 && m==12)|| (d<=20 && m==1)) return "Capricornio";
+    if((d>=21 && m==1) || (d<=19 && m==2)) return "Acuario";
+    return "Piscis";
+}
+
+// Emoji y descripción por signo
+const signoInfo = {
+    "Aries":   {emoji:"♈", desc:"Impulsivo, directo, energético, ama los retos."},
+    "Tauro":   {emoji:"♉", desc:"Paciente, constante, leal y muy perseverante."},
+    "Géminis": {emoji:"♊", desc:"Comunicativo, curioso, adaptable y mentalmente activo."},
+    "Cáncer":  {emoji:"♋", desc:"Emocional, protector, familiar y muy intuitivo."},
+    "Leo":     {emoji:"♌", desc:"Seguro, creativo, llama la atención y le gusta liderar."},
+    "Virgo":   {emoji:"♍", desc:"Analítico, detallista, responsable y observador."},
+    "Libra":   {emoji:"♎", desc:"Equilibrado, diplomático, social y amante de la armonía."},
+    "Escorpio":{emoji:"♏", desc:"Intenso, profundo, decidido, observador y leal."},
+    "Sagitario":{emoji:"♐", desc:"Aventurero, optimista, sincero y amante de la libertad."},
+    "Capricornio":{emoji:"♑", desc:"Disciplinado, ambicioso, trabajador y constante."},
+    "Acuario": {emoji:"♒", desc:"Original, independiente, idealista y futurista."},
+    "Piscis":  {emoji:"♓", desc:"Soñador, sensible, empático y muy imaginativo."}
+};
+
+// Tipo de personalidad por letra dominante
+function tipoPersonalidadPorLetra(letra){
+    switch(letra){
+        case "A":
+            return {
+                titulo: "Líder extrovertido y práctico",
+                desc: "Tiendes a tomar la iniciativa, disfrutas lo concreto y te gusta tener las cosas claras y bajo control."
+            };
+        case "B":
+            return {
+                titulo: "Introvertido/a reflexivo/a y sensible",
+                desc: "Prefieres pocos pero buenos amigos, valoras los sentimientos y disfrutas espacios tranquilos para pensar."
+            };
+        case "C":
+            return {
+                titulo: "Creativo/a e imaginativo/a",
+                desc: "Generas ideas nuevas, ves posibilidades donde otros no y te gusta expresarte de forma original."
+            };
+        case "D":
+            return {
+                titulo: "Analítico/a y estratega",
+                desc: "Te gusta analizar, planificar y pensar en la mejor forma de hacer las cosas. Eres detallista y lógico/a."
+            };
+        case "E":
+        default:
+            return {
+                titulo: "Equilibrado/a y sociable",
+                desc: "Combinas varias cualidades: sociable, adaptable y capaz de llevarte bien con distintos tipos de personas."
+            };
+    }
+}
+
+document.getElementById("toStep4").onclick = function () {
+    const respuestas = [];
+    for(let i=1;i<=10;i++){
+        respuestas.push(getRadio("p"+i));
+    }
+    if(respuestas.includes(null)){
+        alert("Responde todas las preguntas de la 6 a la 10.");
+        return;
+    }
+
+    // Conteo de letras A–E
+    const conteos = {A:0,B:0,C:0,D:0,E:0};
+    respuestas.forEach(r => {
+        if(conteos[r] !== undefined) conteos[r]++;
+    });
+
+    // Letra dominante
+    let dominante = "A";
+    let max = -1;
+    for(const letra in conteos){
+        if(conteos[letra] > max){
+            max = conteos[letra];
+            dominante = letra;
+        }
+    }
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const dia = parseInt(document.getElementById("dia").value);
+    const mes = parseInt(document.getElementById("mes").value);
+    const anio = parseInt(document.getElementById("anio").value);
+
+    const anioActual = new Date().getFullYear();
+    const edad = anioActual - anio;
+
+    const numSuerte = numeroSuerte(dia,mes,anio);
+    const signName = signoZodiacal(dia,mes);
+    const signData = signoInfo[signName] || {emoji:"", desc:""};
+
+    const tipo = tipoPersonalidadPorLetra(dominante);
+
+    const texto =
+`⭐ RESULTADO DEL TEST
+Nombre: ${nombre}
+Edad: ${edad} años
+Signo: ${signName} ${signData.emoji}
+Número de la suerte: ${numSuerte}
+
+🧠 TIPO DE PERSONALIDAD
+${tipo.titulo}
+${tipo.desc}
+
+📊 ANÁLISIS DE TUS RESPUESTAS
+A: ${conteos.A}  |  B: ${conteos.B}  |  C: ${conteos.C}  |  D: ${conteos.D}  |  E: ${conteos.E}
+
+♏ DETALLE SEGÚN TU SIGNO
+${signName} ${signData.emoji}: ${signData.desc}
+
+🔮 INTERPRETACIÓN FINAL
+Combinas tu forma de responder (tipo de personalidad) con la energía de tu signo y tu número de la suerte ${numSuerte}.
+Usa este resultado como un 'hack' para conocerte mejor, tomar mejores decisiones y potenciar tus fortalezas.`;
+
+    document.getElementById("resultadoTexto").textContent = texto;
+
+    step3.style.display = "none";
+    step4.style.display = "block";
+};
+
+document.getElementById("restart").onclick = () => location.reload();
+
+// Música hacker
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
+let playing = false;
+
+musicBtn.onclick = () => {
+    if (!playing) {
+        music.play();
+        playing = true;
+        musicBtn.firstElementChild.textContent = "⏸";
+    } else {
+        music.pause();
+        playing = false;
+        musicBtn.firstElementChild.textContent = "▶️";
+    }
+};
+
+// Efecto 3D en la tarjeta al mover el mouse
+const card = document.getElementById("card");
+card.classList.add("tilt");
+
+card.addEventListener("mousemove", (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const midX = rect.width / 2;
+    const midY = rect.height / 2;
+
+    const rx = -((y - midY) / midY) * 8;
+    const ry = ((x - midX) / midX) * 8;
+
+    card.style.setProperty("--rx", rx + "deg");
+    card.style.setProperty("--ry", ry + "deg");
+});
+
+card.addEventListener("mouseleave", () => {
+    card.style.setProperty("--rx", "0deg");
+    card.style.setProperty("--ry", "0deg");
+});
+</script>
+
+</body>
+</html>
